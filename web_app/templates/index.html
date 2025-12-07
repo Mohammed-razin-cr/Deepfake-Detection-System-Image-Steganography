@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammed Razin CR | Deepfake Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        .logo h1 {
+            font-family: 'Orbitron', sans-serif !important;
+            font-weight: 900 !important;
+            letter-spacing: 3px !important;
+            text-transform: uppercase !important;
+            font-size: 2.5rem !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <h1>CYBER-SENTINEL</h1>
+                </div>
+                <p class="subtitle">Signature deepfake intelligence crafted by Mohammed Razin CR, powered by CNN, ResNext, LSTM, and Vision Transformers.</p>
+                <div class="user-info" style="margin-top: 20px;">
+                    <span id="user-email" style="opacity: 0.9; margin-right: 15px;"></span>
+                    <button id="logout-btn" class="btn btn-small" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="upload-container">
+                    <div class="upload-tabs">
+                        <button class="tab-btn active" data-tab="image">
+                            <i class="fas fa-image"></i> Image Detection
+                        </button>
+                        <button class="tab-btn" data-tab="video">
+                            <i class="fas fa-video"></i> Video Detection
+                        </button>
+                        <button class="tab-btn" data-tab="encrypt">
+                            <i class="fas fa-lock"></i> Encrypt Image
+                        </button>
+                        <button class="tab-btn" data-tab="decrypt">
+                            <i class="fas fa-unlock"></i> Decrypt Image
+                        </button>
+                    </div>
+
+                    <!-- Image Upload Tab -->
+                    <div id="image-tab" class="tab-content active">
+                        <div class="upload-area" id="image-upload-area">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Upload Image</h3>
+                            <p>Drag and drop or click to select image file</p>
+                            <p class="file-types">Supported: JPG, PNG, BMP, GIF</p>
+                            <input type="file" id="image-input" accept="image/*" hidden>
+                        </div>
+                        <button class="btn btn-primary" id="detect-image-btn" disabled>
+                            <i class="fas fa-search"></i> Analyze Image
+                        </button>
+                    </div>
+
+                    <!-- Video Upload Tab -->
+                    <div id="video-tab" class="tab-content">
+                        <div class="upload-area" id="video-upload-area">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Upload Video</h3>
+                            <p>Drag and drop or click to select video file</p>
+                            <p class="file-types">Supported: MP4, AVI, MOV, MKV, FLV (Max 500MB)</p>
+                            <input type="file" id="video-input" accept="video/*" hidden>
+                        </div>
+                        <button class="btn btn-primary" id="detect-video-btn" disabled>
+                            <i class="fas fa-search"></i> Analyze Video
+                        </button>
+                    </div>
+
+                    <!-- Encrypt Image Tab -->
+                    <div id="encrypt-tab" class="tab-content">
+                        <div class="upload-area" id="encrypt-upload-area">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Upload Image to Encrypt</h3>
+                            <p>Drag and drop or click to select image file</p>
+                            <p class="file-types">Supported: PNG, JPG, JPEG</p>
+                            <input type="file" id="encrypt-image-input" accept="image/*" hidden>
+                        </div>
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label for="encrypt-message" style="display: block; margin-bottom: 8px; font-weight: 500;">
+                                <i class="fas fa-key"></i> Message/Data to Hide:
+                            </label>
+                            <textarea 
+                                id="encrypt-message" 
+                                placeholder="Enter message, link, or data to hide in the image..."
+                                rows="4"
+                                style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box;"
+                            ></textarea>
+                            <p style="font-size: 12px; color: #64748b; margin-top: 5px;">
+                                <i class="fas fa-info-circle"></i> This data will be hidden in the image using steganography
+                            </p>
+                        </div>
+                        <button class="btn btn-primary" id="encrypt-btn" disabled>
+                            <i class="fas fa-lock"></i> Encrypt Image
+                        </button>
+                    </div>
+
+                    <!-- Decrypt Image Tab -->
+                    <div id="decrypt-tab" class="tab-content">
+                        <div class="upload-area" id="decrypt-upload-area">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Upload Encrypted Image</h3>
+                            <p>Drag and drop or click to select encrypted image</p>
+                            <p class="file-types">Supported: PNG, JPG, JPEG</p>
+                            <input type="file" id="decrypt-image-input" accept="image/*" hidden>
+                        </div>
+                        <button class="btn btn-primary" id="decrypt-btn" disabled>
+                            <i class="fas fa-unlock"></i> Decrypt Image
+                        </button>
+                        <button class="btn btn-secondary" id="check-encrypted-btn" disabled style="margin-top: 10px;">
+                            <i class="fas fa-search"></i> Check if Encrypted
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Progress Indicator -->
+            <div id="progress-container" class="progress-container hidden">
+                <div class="spinner"></div>
+                <p id="progress-text">Processing your file...</p>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+
+            <!-- Encryption/Decryption Results Section -->
+            <section id="stego-results-section" class="results-section hidden">
+                <div class="results-container">
+                    <div class="result-header">
+                        <h2 id="stego-result-title">Encryption Results</h2>
+                        <button class="btn-close" id="close-stego-results">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="stego-result-content">
+                        <!-- Results will be inserted here -->
+                    </div>
+                    <div class="result-actions">
+                        <button class="btn btn-secondary" id="new-stego-btn">
+                            <i class="fas fa-plus"></i> New Operation
+                        </button>
+                        <button class="btn btn-secondary" id="download-stego-btn" style="display: none;">
+                            <i class="fas fa-download"></i> Download Encrypted Image
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results-section" class="results-section hidden">
+                <div class="results-container">
+                    <div class="result-header">
+                        <h2>Detection Results</h2>
+                        <button class="btn-close" id="close-results">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="result-verdict" id="result-verdict">
+                        <!-- Verdict will be inserted here -->
+                    </div>
+
+                    <div class="result-stats">
+                        <div class="stat-card">
+                            <h3>Fake Probability</h3>
+                            <div class="stat-value" id="fake-prob">0%</div>
+                            <div class="stat-bar">
+                                <div class="stat-bar-fill" id="fake-bar"></div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <h3>Real Probability</h3>
+                            <div class="stat-value" id="real-prob">0%</div>
+                            <div class="stat-bar">
+                                <div class="stat-bar-fill real" id="real-bar"></div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <h3>Confidence Score</h3>
+                            <div class="stat-value" id="confidence">0%</div>
+                            <div class="stat-bar">
+                                <div class="stat-bar-fill confidence" id="confidence-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="video-info" class="video-info hidden">
+                        <h3>Video Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="label">Duration</span>
+                                <span class="value" id="video-duration">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">FPS</span>
+                                <span class="value" id="video-fps">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Resolution</span>
+                                <span class="value" id="video-resolution">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Frames</span>
+                                <span class="value" id="video-frames">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Encrypted Data Detection Section -->
+                    <div id="encrypted-data-section" class="encrypted-data-section" style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 10px; border-left: 4px solid var(--primary-color);">
+                        <h3 style="margin-bottom: 15px; color: #1e293b;">
+                            <i class="fas fa-lock"></i> Encrypted Data Detection
+                        </h3>
+                        <div id="encrypted-data-content">
+                            <!-- Encrypted data will be shown here -->
+                        </div>
+                    </div>
+
+                    <div class="result-actions">
+                        <button class="btn btn-secondary" id="new-detection-btn">
+                            <i class="fas fa-plus"></i> New Detection
+                        </button>
+                        <button class="btn btn-secondary" id="download-btn">
+                            <i class="fas fa-download"></i> Download Results
+                        </button>
+                    </div>
+
+                    <!-- Feedback Section -->
+                    <div class="feedback-section">
+                        <h3>Was this prediction correct?</h3>
+                        <p class="feedback-subtitle">Your feedback helps improve the model</p>
+                        <div class="feedback-buttons">
+                            <button class="btn btn-feedback btn-correct" id="feedback-correct">
+                                <i class="fas fa-check-circle"></i> Correct
+                            </button>
+                            <button class="btn btn-feedback btn-incorrect" id="feedback-incorrect">
+                                <i class="fas fa-times-circle"></i> Incorrect
+                            </button>
+                        </div>
+                        <div id="feedback-message" class="feedback-message hidden"></div>
+                    </div>
+
+                    <!-- RL Stats Section -->
+                    <div class="rl-stats-section">
+                        <h3><i class="fas fa-brain"></i> Model Learning Progress</h3>
+                        <div class="rl-stats-grid">
+                            <div class="rl-stat-card">
+                                <span class="rl-stat-label">Feedback Collected</span>
+                                <span class="rl-stat-value" id="feedback-count">0</span>
+                            </div>
+                            <div class="rl-stat-card">
+                                <span class="rl-stat-label">RL Trainings</span>
+                                <span class="rl-stat-value" id="rl-trainings">0</span>
+                            </div>
+                            <div class="rl-stat-card">
+                                <span class="rl-stat-label">Improvements</span>
+                                <span class="rl-stat-value" id="rl-improvements">0</span>
+                            </div>
+                            <div class="rl-stat-card">
+                                <span class="rl-stat-label">Avg Loss</span>
+                                <span class="rl-stat-value" id="rl-loss">-</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" id="retrain-btn">
+                            <i class="fas fa-graduation-cap"></i> Train on Feedback
+                        </button>
+                        <div id="retrain-message" class="retrain-message hidden"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Info Section -->
+            <section class="info-section">
+                <div class="info-grid-main">
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>Advanced Models</h3>
+                        <p>Combines CNN, ResNext, LSTM, and Vision Transformer for robust detection</p>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3>Image & Video</h3>
+                        <p>Detects deepfakes in both static images and dynamic video content</p>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>High Accuracy</h3>
+                        <p>Achieves state-of-the-art performance with ensemble learning</p>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3>Secure & Private</h3>
+                        <p>Your files are processed locally and never stored permanently</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Section -->
+            <section class="history-section">
+                <div class="history-container">
+                    <h2>Recent Detections</h2>
+                    <div class="history-controls">
+                        <button class="btn btn-small" id="refresh-history">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                        <button class="btn btn-small btn-danger" id="clear-history">
+                            <i class="fas fa-trash"></i> Clear History
+                        </button>
+                    </div>
+                    <div id="history-list" class="history-list">
+                        <p class="empty-message">No recent detections</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Mohammed Razin CR | CYBER-SENTINEL</p>
+            <p class="tech-stack">Curated by Mohammed Razin CR • Technologies: PyTorch, Flask, ResNet, ViT, LSTM</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
